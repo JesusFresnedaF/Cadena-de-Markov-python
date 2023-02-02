@@ -6,6 +6,8 @@ import random
 #! Cadenas de Markov
 
 # * Sustituimos signos de puntuación por espacios en blanco
+
+
 def separar_signos(palabras):
     signos = [',', '.', ':', ';', '?', '¿', '!', '¡', '(', ')']
     for i in signos:
@@ -15,21 +17,26 @@ def separar_signos(palabras):
 
 # * Separamos el diccionario de palabras en un diccionario según el orden de aparición
 def preparar_cadena_Markov(palabras: dict, texto: list):
+    cadena = {
+        'START START': [],
+    }
     for linea in texto:
-        # print(linea)
+        cadena["START START"].append(linea[0])
         for i, word in enumerate(linea):
-            if i == 0:
-                add_word(("START","START"), word)
-            elif i == 1:
-                add_word(("START", linea[0]), word)
-            else:
-                add_word((linea[i - 2], linea[i - 1]), word)
+            if i == 1:
+                cadena["START"+" "+ linea[i - 1]] = [word]
+                if not word in cadena["START"+" "+ linea[i - 1]]:
+                    cadena["START"+" "+ linea[i - 1]].append(word)
+            if i > 1:
+                if word in cadena:
+                    cadena[linea[i-2]+" "+linea[i-1]].append(word)
+                else:
+                    cadena[linea[i-2]+" "+linea[i-1]] = [word]
+    print(cadena)
 
-def add_word(prev, next):
-    almacen = {}
-    almacen[prev].append(next)
-
-# def crear_frase(cadena: dict, linea: list, palabras: dict):
+# def gen_frase(cadena:dict):
+#     frase = " "
+#     print(cadena)
 
 # * leemos lineas
 def leer_palabras(file):
@@ -46,8 +53,6 @@ def leer_palabras(file):
                 palabras_dic[palabras[i]] = palabras[i+1:]
             else:
                 palabras_dic[palabras[i]].extend(palabras[i+1:])
-
-    print(palabras_dic)
     return palabras_dic, texto
 
 
@@ -58,11 +63,11 @@ if __name__ == '__main__':
     try:
         file = open("frases.txt", 'rt')
         palabras_dic, texto = leer_palabras(file)
-        # preparar_cadena_Markov(palabras_dic, texto)
+        preparar_cadena_Markov(palabras_dic, texto)
+        # gen_frase()
     except Exception as e:
         print(e)
     finally:
         file.close()
-      file.close()
 
 ~~~
