@@ -8,7 +8,7 @@ import random
 # * Sustituimos signos de puntuación por espacios en blanco
 
 
-def separar_signos(palabras):
+def separar_signos(palabras)->str:
     signos = [',', '.', ':', ';', '?', '¿', '!', '¡', '(', ')']
     for i in signos:
         palabras = palabras.replace(i, ' ')
@@ -23,20 +23,21 @@ def preparar_cadena_Markov(palabras: dict, texto: list):
     for linea in texto:
         cadena["START START"].append(linea[0])
         for i, word in enumerate(linea):
+            # print(i, " ", word)
             if i == 1:
-                cadena["START"+" "+ linea[i - 1]] = [word]
-                if not word in cadena["START"+" "+ linea[i - 1]]:
+                if not ("START"+" "+linea[i - 1]) in cadena:
+                    cadena["START"+" "+ linea[i - 1]] = [word]
+                else:
                     cadena["START"+" "+ linea[i - 1]].append(word)
             if i > 1:
-                if word in cadena:
+                if (linea[i-2]+" "+linea[i-1]) in cadena:
                     cadena[linea[i-2]+" "+linea[i-1]].append(word)
                 else:
                     cadena[linea[i-2]+" "+linea[i-1]] = [word]
-    print(cadena)
+    return cadena, texto
 
-# def gen_frase(cadena:dict):
-#     frase = " "
-#     print(cadena)
+def gen_frase(cadena:dict, texto: list):
+    print(cadena)
 
 # * leemos lineas
 def leer_palabras(file):
@@ -44,7 +45,7 @@ def leer_palabras(file):
     texto = []
     palabras_dic = {}
     for linea in file:
-        almacen = separar_signos(linea)
+        almacen = separar_signos(linea).lower()
         palabras = almacen.rsplit()
         texto.append(palabras)
         for i in range(len(palabras)):
@@ -63,8 +64,7 @@ if __name__ == '__main__':
     try:
         file = open("frases.txt", 'rt')
         palabras_dic, texto = leer_palabras(file)
-        preparar_cadena_Markov(palabras_dic, texto)
-        # gen_frase()
+        gen_frase(preparar_cadena_Markov(palabras_dic, texto), texto)
     except Exception as e:
         print(e)
     finally:
