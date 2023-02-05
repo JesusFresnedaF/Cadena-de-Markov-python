@@ -1,6 +1,5 @@
 # Cadena-de-Markov-python
 ~~~
-
 import random
 
 #! Cadenas de Markov
@@ -34,10 +33,21 @@ def preparar_cadena_Markov(palabras: dict, texto: list):
                     cadena[linea[i-2]+" "+linea[i-1]].append(word)
                 else:
                     cadena[linea[i-2]+" "+linea[i-1]] = [word]
-    return cadena, texto
+    return cadena
 
-def gen_frase(cadena:dict, texto: list):
+def gen_frase(cadena:dict):
+    frase = ""
     print(cadena)
+    for i, word in enumerate(cadena):
+        print(i, " ", word)
+        if i == 0:
+            frase = random.choice(cadena[word])
+        # elif i == 1:
+        #     if cadena[word] in word[i - 1]:
+        frase += " "
+    frase = frase[:-1]
+    frase+="."
+    print(frase)
 
 # * leemos lineas
 def leer_palabras(file):
@@ -64,7 +74,7 @@ if __name__ == '__main__':
     try:
         file = open("frases.txt", 'rt')
         palabras_dic, texto = leer_palabras(file)
-        gen_frase(preparar_cadena_Markov(palabras_dic, texto), texto)
+        gen_frase(preparar_cadena_Markov(palabras_dic, texto))
     except Exception as e:
         print(e)
     finally:
