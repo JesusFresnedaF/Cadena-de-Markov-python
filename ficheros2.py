@@ -1,4 +1,5 @@
 
+import sys
 import random
 
 #! Cadenas de Markov
@@ -46,23 +47,33 @@ def preparar_cadena_Markov(palabras: dict, texto: list):
     return cadena
 
 # * Generamos una frase aleatoria según el diccionario de estados
-def gen_frase(cadena:dict):
-    state = 'START START'
-    s = []
-    frase = ""
-    # * mientras que no lleguemos al estado final
-    while not state in cadena['END']:
-        # * guardamos una palabra aleatoria de ese estado
-        word = random.choice(cadena[state])
-        # * la añadimos a la frase
-        frase += word + " "
-        # * generamos el siguiente estado
-        s = state.split(" ")
-        state = s[1]+" "+word
-    # * añadimos la palabra que corresponde a ese estado final
-    frase += random.choice(cadena[state])
-    frase+="."
-    print(frase)
+def gen_N_frases(cadena:dict):
+    frases = []
+    i = 0
+    n = input("Numero de frases a crear: \n")
+    n = int(n)
+    #* generamos n frases aleatorias
+    while i < n:
+        state = 'START START'
+        s = []
+        frase = ""
+        # * mientras que no lleguemos al estado final
+        while not state in cadena['END']:
+            # * guardamos una palabra aleatoria de ese estado
+            word = random.choice(cadena[state])
+            # * la añadimos a la frase
+            frase += word + " "
+            # * generamos el siguiente estado
+            s = state.split(" ")
+            state = s[1]+" "+word
+        # * añadimos la palabra que corresponde a ese estado final
+        frase += random.choice(cadena[state])
+        frase+="."
+        # * si la linea no existe
+        if not frase in frases:
+            frases.append(frase)
+            print(frase)
+            i += 1
 
 # * Leemos el texto y guardamos las palabras de cada linea en un diccionario
 def leer_palabras(file):
@@ -71,7 +82,7 @@ def leer_palabras(file):
     palabras_dic = {}
     # * leemos las lineas del texto
     for linea in file:
-        almacen = separar_signos(linea).lower()
+        almacen = separar_signos(linea)
         palabras = almacen.rsplit()
         texto.append(palabras)
         for i in range(len(palabras)):
@@ -82,15 +93,14 @@ def leer_palabras(file):
                 palabras_dic[palabras[i]].extend(palabras[i+1:])
     return palabras_dic, texto
 
-
 # * MAIN
 if __name__ == '__main__':
     texto = []
     palabras_dic = {}
     try:
-        file = open("frases_informatica.txt", 'rt')
+        file = open("frases_informatica.txt", 'rt', encoding="utf-8")
         palabras_dic, texto = leer_palabras(file)
-        gen_frase(preparar_cadena_Markov(palabras_dic, texto))
+        gen_N_frases(preparar_cadena_Markov(palabras_dic, texto))
     except Exception as e:
         print(e)
     finally:
